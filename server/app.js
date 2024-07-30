@@ -6,6 +6,8 @@ const morgan = require("morgan");
 const fs = require("fs");
 const path = require("path");
 
+const UserRoute = require("./src/routes/userRoutes");
+
 const app = express();
 
 app.use(cors());
@@ -19,6 +21,8 @@ const accessLogStream = fs.createWriteStream(
   path.join(__dirname, "access.log"),
   { flags: "a" }
 );
+
+app.use("/api/user", UserRoute);
 
 app.use(morgan("combined", { stream: accessLogStream }));
 
