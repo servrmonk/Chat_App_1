@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { loginUser, signUpUser } from "../redux/slices/authSlice";
@@ -13,27 +13,30 @@ export default function SignupPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { user, loading, error } = useSelector((state) => {
-    console.log("State in useselector ", state);
-    return state.auth;
-  });
+  const { user, loading, error } = useSelector((state) => state.auth);
 
   const submitHandler = async (e) => {
     e.preventDefault();
 
     const email = emailRef.current.value;
-    const name = nameRef.current.value;
+    const name = loginStatus ? "" : nameRef.current.value;
     const password = passwordRef.current.value;
-    const number = numberRef.current.value;
-    const confirmPassword = confirmPasswordRef.current?.value || "";
+    const number = loginStatus ? "" : numberRef.current.value;
+    const confirmPassword = loginStatus ? "" : confirmPasswordRef.current.value;
 
+    // Check if passwords match for signup
     if (!loginStatus && password !== confirmPassword) {
       console.log("Please enter the correct password in both input boxes");
       return;
     }
 
-    const userData = { email, name, password, number };
-    console.log("userdata ", userData);
+    const userData = { email, password };
+    if (!loginStatus) {
+      userData.name = name;
+      userData.number = number;
+    }
+
+    // Dispatch login or signup action
     if (loginStatus) {
       dispatch(loginUser(userData));
     } else {
@@ -43,13 +46,13 @@ export default function SignupPage() {
 
   const switchAuthModeHandler = () => {
     setLoginStatus((prevState) => !prevState);
-    console.log("Login status inside switch:", loginStatus);
   };
+
   useEffect(() => {
     if (user) {
-      navigate("/home"); 
-    }else{
-      navigate('/')
+      navigate("/home");
+    } else {
+      navigate("/");
     }
   }, [user, navigate]);
 
@@ -72,30 +75,55 @@ export default function SignupPage() {
               ref={emailRef}
             />
           </div>
-          <div className="mb-4">
-            <label htmlFor="name" className="block mb-2 text-lg font-medium">
-              Name
-            </label>
-            <input
-              className="bg-slate-200 rounded-md w-full h-9 p-2"
-              type="text"
-              id="name"
-              required
-              ref={nameRef}
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="name" className="block mb-2 text-lg font-medium">
-              Phone Number
-            </label>
-            <input
-              className="bg-slate-200 rounded-md w-full h-9 p-2"
-              type="number"
-              id="number"
-              required
-              ref={numberRef}
-            />
-          </div>
+          {!loginStatus && (
+            <>
+              <div className="mb-4">
+                <label
+                  htmlFor="name"
+                  className="block mb-2 text-lg font-medium"
+                >
+                  Name
+                </label>
+                <input
+                  className="bg-slate-200 rounded-md w-full h-9 p-2"
+                  type="text"
+                  id="name"
+                  required
+                  ref={nameRef}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="number"
+                  className="block mb-2 text-lg font-medium"
+                >
+                  Phone Number
+                </label>
+                <input
+                  className="bg-slate-200 rounded-md w-full h-9 p-2"
+                  type="number"
+                  id="number"
+                  required
+                  ref={numberRef}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="confirmPassword"
+                  className="block mb-2 text-lg font-medium"
+                >
+                  Confirm Password
+                </label>
+                <input
+                  className="bg-slate-200 rounded-md w-full h-9 p-2"
+                  type="password"
+                  id="confirmPassword"
+                  required
+                  ref={confirmPasswordRef}
+                />
+              </div>
+            </>
+          )}
           <div className="mb-4">
             <label
               htmlFor="password"
@@ -111,23 +139,6 @@ export default function SignupPage() {
               ref={passwordRef}
             />
           </div>
-          {!loginStatus && (
-            <div className="mb-4">
-              <label
-                htmlFor="confirmPassword"
-                className="block mb-2 text-lg font-medium"
-              >
-                Confirm Password
-              </label>
-              <input
-                className="bg-slate-200 rounded-md w-full h-9 p-2"
-                type="password"
-                id="confirmPassword"
-                required
-                ref={confirmPasswordRef}
-              />
-            </div>
-          )}
           <button
             type="submit"
             className="w-full h-10 bg-blue-700 hover:bg-blue-800 text-white rounded-full font-medium text-sm px-5 py-2.5 mb-4"
@@ -154,7 +165,7 @@ export default function SignupPage() {
               Don't have an account?{" "}
               <button
                 type="button"
-                onClick={() => switchAuthModeHandler()}
+                onClick={switchAuthModeHandler}
                 className="text-blue-700 underline"
               >
                 Sign up here
@@ -165,7 +176,7 @@ export default function SignupPage() {
               Login with an existing account{" "}
               <button
                 type="button"
-                onClick={() => switchAuthModeHandler()}
+                onClick={switchAuthModeHandler}
                 className="text-blue-700 underline"
               >
                 Login

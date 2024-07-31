@@ -8,8 +8,8 @@ function generateAccessToken(id) {
 }
 const UserController = {
   createUser: async (req, res) => {
-    console.log("Req.body in createuser ",req.body);
-    const { name, email, password,number } = req.body;
+    console.log("Req.body in createuser ", req.body);
+    const { name, email, password, number } = req.body;
 
     try {
       const userEmail = await User.findOne({ where: { email: email } });
@@ -62,7 +62,7 @@ const UserController = {
               success: true,
               message: "User logged in succesfully",
               token: generateAccessToken(user[0].id),
-              premium: user[0].premium,
+              // premium: user[0].premium,
             });
           } else {
             return res
