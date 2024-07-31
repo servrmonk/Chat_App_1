@@ -8,7 +8,8 @@ function generateAccessToken(id) {
 }
 const UserController = {
   createUser: async (req, res) => {
-    const { name, email, password,phoneNo } = req.body;
+    console.log("Req.body in createuser ",req.body);
+    const { name, email, password,number } = req.body;
 
     try {
       const userEmail = await User.findOne({ where: { email: email } });
@@ -18,7 +19,7 @@ const UserController = {
           const newUser = await User.create({
             name,
             email,
-            phoneNo,
+            number,
             password: hash,
             // premium: false,
           });
@@ -80,4 +81,4 @@ const UserController = {
   },
 };
 
-module.exports = UserControllers;
+module.exports = UserController;

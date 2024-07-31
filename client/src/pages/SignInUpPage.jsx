@@ -1,6 +1,7 @@
-import React, { useContext, useRef, useState } from "react";
-import axios from "axios";
-// import { useNavigate } from "react-router-dom";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { loginUser, signUpUser } from "../redux/slices/authSlice";
 
 export default function SignupPage() {
   const [loginStatus, setLoginStatus] = useState(false);
@@ -8,11 +9,14 @@ export default function SignupPage() {
   const nameRef = useRef(null);
   const passwordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
-//   const navigate = useNavigate();
+  const numberRef = useRef(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const loginHandler = (data) => {
-    // console.log("Data in login handler ",data);
-  };
+  const { user, loading, error } = useSelector((state) => {
+    console.log("State in useselector ", state);
+    return state.auth;
+  });
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -20,6 +24,7 @@ export default function SignupPage() {
     const email = emailRef.current.value;
     const name = nameRef.current.value;
     const password = passwordRef.current.value;
+    const number = numberRef.current.value;
     const confirmPassword = confirmPasswordRef.current?.value || "";
 
     if (!loginStatus && password !== confirmPassword) {
@@ -27,28 +32,26 @@ export default function SignupPage() {
       return;
     }
 
-    // try {
-    //   const endpoint = loginStatus
-    //     ? `${baseUrl}/user/login`
-    //     : `${baseUrl}/user/signup`;
-    //   // console.log("Inside the try catch block ");
-    //   const response = await axios.post(endpoint, { name, email, password });
-    //   console.log("Response in signup page", response);
-    //   loginHandler(response.data);
-    //   navigate("/userExpense");
-    // } catch (error) {
-    //   console.error(
-    //     "Error:",
-    //     error.response ? error.response.data : error.message
-    //   );
-    //   navigate("/");
-    // }
+    const userData = { email, name, password, number };
+    console.log("userdata ", userData);
+    if (loginStatus) {
+      dispatch(loginUser(userData));
+    } else {
+      dispatch(signUpUser(userData));
+    }
   };
 
   const switchAuthModeHandler = () => {
     setLoginStatus((prevState) => !prevState);
     console.log("Login status inside switch:", loginStatus);
   };
+  useEffect(() => {
+    if (user) {
+      navigate("/home"); 
+    }else{
+      navigate('/')
+    }
+  }, [user, navigate]);
 
   return (
     <div className="bg-gradient-to-tl from-amber-200 to-indigo-700 min-h-screen flex items-center justify-center p-8">
@@ -79,6 +82,18 @@ export default function SignupPage() {
               id="name"
               required
               ref={nameRef}
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="name" className="block mb-2 text-lg font-medium">
+              Phone Number
+            </label>
+            <input
+              className="bg-slate-200 rounded-md w-full h-9 p-2"
+              type="number"
+              id="number"
+              required
+              ref={numberRef}
             />
           </div>
           <div className="mb-4">

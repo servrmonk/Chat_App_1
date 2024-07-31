@@ -10,7 +10,19 @@ const UserRoute = require("./src/routes/userRoutes");
 
 const app = express();
 
-app.use(cors());
+// app.use(cors()); 
+app.use(
+  cors({
+    origin:"*", //for any allow origin 
+    // methods:["GET","POST"]
+    // credentials:true
+  })
+)
+// app.use(
+//   cors({
+//     origin:"https://127.0.0.1:5501"
+//   })
+// )
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
