@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 /* To generate jwt token for userId */
 function generateAccessToken(id) {
-  return jwt.sign({ userId: id }, "secretRandomKey");
+  return jwt.sign({ userId: id }, process.env.JWT_TOKEN_SECRET,{ expiresIn: '1800s' });
 }
 const UserController = {
   createUser: async (req, res) => {

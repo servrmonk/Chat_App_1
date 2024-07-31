@@ -1,10 +1,10 @@
-import SignupPage from "./pages/SignInUpPage";
-
+// import SignupPage from "./pages/SignInUpPage";
+import Index from "./routes";
 
 function App() {
   return (
     <>
-      <SignupPage />
+      <Index />
     </>
   );
 }
